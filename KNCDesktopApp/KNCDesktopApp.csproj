@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BaseOutputPath>bin</BaseOutputPath>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.67.0.3309" />
+    <PackageReference Include="PDFtoImage" Version="3.1.0" />
+    <PackageReference Include="QRCoder" Version="1.4.3" />
+    <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="2.88.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="echo Removing assets folder from $(TargetDir)assets &amp;&amp; if exist &quot;$(TargetDir)assets&quot; (echo Found and removing... &amp;&amp; rmdir /s /q &quot;$(TargetDir)assets&quot;) else echo Folder not found" />
+	</Target>
+
+	<!-- Target to copy the entire assets directory, including empty folders -->
+	<Target Name="CopyAssets" AfterTargets="Build">
+		<Exec Command="powershell -NoProfile -ExecutionPolicy Unrestricted -Command &quot;Copy-Item -Path '$(ProjectDir)assets\' -Destination '$(TargetDir)assets\' -Recurse -Force&quot;" />
+	</Target>
+
+	<ItemGroup>
+		<Content Include="update_from_drive.py">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="serviceAccnt_secret.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="update_drive.py">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+</Project>
